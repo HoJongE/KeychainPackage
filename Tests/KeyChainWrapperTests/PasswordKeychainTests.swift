@@ -13,29 +13,29 @@ final class PasswordKeychainTests: XCTestCase {
         try super.setUpWithError()
     }
 
-    override func tearDownWithError() throws {
-        try passwordKeychainManager.removeAllPassword()
+    override func tearDown() async throws {
+        try await passwordKeychainManager.removeAllPassword()
         passwordKeychainManager = nil
-        try super.tearDownWithError()
+        try await super.tearDown()
     }
 
-    func testSaveAndGetPassword() throws {
+    func testSaveAndGetPassword() async throws {
         do {
-            try passwordKeychainManager.savePassword(testPassword, for: testAccount)
-            let password = try passwordKeychainManager.getPassword(for: testAccount)
+            try await passwordKeychainManager.savePassword(testPassword, for: testAccount)
+            let password = try await passwordKeychainManager.getPassword(for: testAccount)
             XCTAssertEqual(password, testPassword)
         } catch {
             XCTFail("Saving Password failed, \(error.localizedDescription)")
         }
     }
 
-    func testUpdatePassword() throws {
+    func testUpdatePassword() async throws {
         do {
-            try passwordKeychainManager.savePassword(testPassword, for: testAccount)
-            try passwordKeychainManager
+            try await passwordKeychainManager.savePassword(testPassword, for: testAccount)
+            try await passwordKeychainManager
                 .savePassword(testPassword + "2", for: testAccount)
 
-            let password = try passwordKeychainManager.getPassword(for: testAccount)
+            let password = try await passwordKeychainManager.getPassword(for: testAccount)
 
             XCTAssertEqual(password, testPassword + "2")
             XCTAssertNotEqual(password, testPassword)
@@ -44,12 +44,13 @@ final class PasswordKeychainTests: XCTestCase {
         }
     }
 
-    func testRemovePassword() throws {
+    func testRemovePassword() async throws {
         do {
-            try passwordKeychainManager.savePassword(testPassword, for: testAccount)
-            try passwordKeychainManager.removePassword(for: testAccount)
+            try await passwordKeychainManager.savePassword(testPassword, for: testAccount)
+            try await passwordKeychainManager.removePassword(for: testAccount)
 
-            XCTAssertNil(try passwordKeychainManager.getPassword(for: testAccount))
+            let password = try await passwordKeychainManager.getPassword(for: testAccount)
+            XCTAssertNil(password)
         } catch {
             XCTFail("Remove Password Failed with \(error.localizedDescription)")
         }
