@@ -2,8 +2,12 @@ import Foundation
 
 public final class PasswordKeychainManager {
 
-    public init() {
+    private let service: String
+    private let appGroup: String?
 
+    public init(service: String, appGroup: String? = nil) {
+        self.service = service
+        self.appGroup = appGroup
     }
 
 }
@@ -11,7 +15,7 @@ public final class PasswordKeychainManager {
 // MARK: - Public Interface
 public extension PasswordKeychainManager {
 
-    func savePassword(_ password: String, for userAccount: String, service: String, appGroup: String? = nil) throws {
+    func savePassword(_ password: String, for userAccount: String) throws {
 
         let encodedPassword: Data = try parsePasswordToData(password)
         let passwordQuery: PasswordQuery = PasswordQuery(service: service, appGroup: appGroup)
@@ -44,9 +48,9 @@ public extension PasswordKeychainManager {
         }
     }
 
-    func getPassword(for userAccount: String, service: String, appGroup: String? = nil) throws -> String? {
+    func getPassword(for userAccount: String) throws -> String? {
 
-        let query = makeFindPasswordQuery(for: userAccount, service: service, appGroup: appGroup)
+        let query = makeFindPasswordQuery(for: userAccount)
 
         var queryResult: AnyObject?
 
@@ -71,7 +75,7 @@ public extension PasswordKeychainManager {
         }
     }
 
-    func removePassword(for userAccount: String, service: String, appGroup: String? = nil) throws {
+    func removePassword(for userAccount: String) throws {
         var query = PasswordQuery(service: service, appGroup: appGroup).query
         query[String(kSecAttrAccount)] = userAccount
 
@@ -82,7 +86,7 @@ public extension PasswordKeychainManager {
         }
     }
 
-    func removeAllPassword(service: String, appGroup: String? = nil) throws {
+    func removeAllPassword() throws {
         let query = PasswordQuery(service: service, appGroup: appGroup).query
 
         let status = SecItemDelete(query as CFDictionary)
@@ -107,7 +111,7 @@ private extension PasswordKeychainManager {
         return encodedPassword
     }
 
-    func makeFindPasswordQuery(for userAccount: String, service: String, appGroup: String? = nil) -> CFDictionary {
+    func makeFindPasswordQuery(for userAccount: String) -> CFDictionary {
         let passwordQuery = PasswordQuery(service: service, appGroup: appGroup)
         var ret = passwordQuery.query
         ret[String(kSecMatchLimit)] = kSecMatchLimitOne
