@@ -36,7 +36,7 @@ public extension SecretInfoKeychainManager {
         return password
     }
 
-    func removeInfo(for infoKey: String) async throws {
+    func removeSecretInfo(for infoKey: String) async throws {
         _ = try await withCheckedThrowingContinuation { [self] (continuation: CheckedContinuation<Void, Error>) in
             removeSecretInfo(for: infoKey) { error in
                 if let error = error {

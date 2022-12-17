@@ -47,7 +47,7 @@ final class PasswordKeychainTests: XCTestCase {
     func testRemovePassword() async {
         do {
             try await passwordKeychainManager.saveSecretInfo(testPassword, for: testAccount)
-            try await passwordKeychainManager.removeInfo(for: testAccount)
+            try await passwordKeychainManager.removeSecretInfo(for: testAccount)
 
             let password = try await passwordKeychainManager.getSecretInfo(for: testAccount)
             XCTAssertNil(password)
