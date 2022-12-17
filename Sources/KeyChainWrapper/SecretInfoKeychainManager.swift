@@ -1,6 +1,6 @@
 import Foundation
 
-public final class SecretInfoKeychainManager {
+public struct SecretInfoKeychainManager {
 
     private let service: String
     private let appGroup: String?
