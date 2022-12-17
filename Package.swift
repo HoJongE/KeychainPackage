@@ -13,9 +13,11 @@ let package = Package(
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "KeyChainWrapper",
-            type: .static,
             targets: ["KeyChainWrapper"]),
-
+        .library(
+            name: "KeyChainWrapperCombine",
+            targets: ["KeyChainWrapperCombine"]
+        )
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -27,8 +29,14 @@ let package = Package(
         .target(
             name: "KeyChainWrapper",
             dependencies: []),
+        .target(
+            name: "KeyChainWrapperCombine",
+            dependencies: ["KeyChainWrapper"]),
         .testTarget(
             name: "KeyChainWrapperTests",
-            dependencies: [])
+            dependencies: ["KeyChainWrapper"]),
+        .testTarget(
+            name: "KeyChainWrapperCombineTests",
+            dependencies: ["KeyChainWrapperCombine"])
     ]
 )
