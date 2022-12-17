@@ -1,6 +1,6 @@
 import Foundation
 
-public final class PasswordKeychainManager {
+public final class SecretInfoKeychainManager {
 
     private let service: String
     private let appGroup: String?
@@ -12,72 +12,19 @@ public final class PasswordKeychainManager {
 
 }
 
-// MARK: - Public Interface
-// MARK: - Async/Await extension
-public extension PasswordKeychainManager {
-
-    func savePassword(_ password: String, for userAccount: String) async throws {
-        try await withCheckedThrowingContinuation { [self] (continuation: CheckedContinuation<Void, Error>) in
-            savePassword(password, for: userAccount) { error in
-                if let error = error {
-                    continuation.resume(throwing: error)
-                    return
-                }
-                continuation.resume()
-            }
-        }
-    }
-
-    func getPassword(for userAccount: String) async throws -> String? {
-        let password: String? = try await withCheckedThrowingContinuation { [self] continuation in
-            getPassword(for: userAccount) { password, error in
-                if let error = error {
-                    continuation.resume(throwing: error)
-                    return
-                }
-                continuation.resume(returning: password)
-            }
-        }
-        return password
-    }
-
-    func removePassword(for userAccount: String) async throws {
-        _ = try await withCheckedThrowingContinuation { [self] (continuation: CheckedContinuation<Void, Error>) in
-            removePassword(for: userAccount) { error in
-                if let error = error {
-                    continuation.resume(throwing: error)
-                    return
-                }
-                continuation.resume()
-            }
-        }
-    }
-
-    func removeAllPassword() async throws {
-        _ = try await withCheckedThrowingContinuation { [self] (continuation: CheckedContinuation<Void, Error>) in
-            removeAllPassword { error in
-                if let error = error {
-                    continuation.resume(throwing: error)
-                    return
-                }
-                continuation.resume()
-            }
-        }
-    }
-}
 // MARK: - Completion handler extension
-public extension PasswordKeychainManager {
-    func savePassword(_ password: String, for userAccount: String, completion: ((Error?) -> Void)? = nil) {
+public extension SecretInfoKeychainManager {
+    func saveSecretInfo(_ secretInfo: String, for infoKey: String, completion: ((Error?) -> Void)? = nil) {
         DispatchQueue.global(qos: .userInteractive).async {
             // password 를 데이터 convert 에 실패하면... 바로 completion handler 실행
-            guard let encodedPassword: Data = try? self.parsePasswordToData(password) else {
+            guard let encodedPassword: Data = try? self.parseInfosToData(secretInfo) else {
                 completion?(KeyChainError.stringToDataConversionError)
                 return
             }
             let passwordQuery: PasswordQuery = PasswordQuery(service: self.service, appGroup: self.appGroup)
 
             var query = passwordQuery.query
-            query[String(kSecAttrAccount)] = userAccount
+            query[String(kSecAttrAccount)] = infoKey
             let status = SecItemCopyMatching(query as CFDictionary, nil)
             switch status {
             case errSecSuccess:
@@ -104,9 +51,9 @@ public extension PasswordKeychainManager {
         }
     }
 
-    func getPassword(for userAccount: String, completion: ((String? ,Error?) -> Void)? = nil) {
+    func getSecretInfo(for infoKey: String, completion: ((String? ,Error?) -> Void)? = nil) {
         DispatchQueue.global(qos: .userInteractive).async {
-            let query = self.makeFindPasswordQuery(for: userAccount)
+            let query = self.makeFindInfoQuery(for: infoKey)
 
             var queryResult: AnyObject?
             let status: OSStatus = withUnsafeMutablePointer(to: &queryResult) {
@@ -131,10 +78,10 @@ public extension PasswordKeychainManager {
         }
     }
 
-    func removePassword(for userAccount: String, completion: ((Error?) -> Void)? = nil) {
+    func removeSecretInfo(for infoKey: String, completion: ((Error?) -> Void)? = nil) {
         DispatchQueue.global(qos: .userInteractive).async { [self] in
             var query = PasswordQuery(service: service, appGroup: appGroup).query
-            query[String(kSecAttrAccount)] = userAccount
+            query[String(kSecAttrAccount)] = infoKey
             let status = SecItemDelete(query as CFDictionary)
 
             guard status == errSecSuccess || status == errSecItemNotFound else {
@@ -145,7 +92,7 @@ public extension PasswordKeychainManager {
         }
     }
 
-    func removeAllPassword(completion: ((Error?) -> Void)? = nil) {
+    func removeAllInfos(completion: ((Error?) -> Void)? = nil) {
         DispatchQueue.global(qos: .userInteractive).async { [self] in
             let query = PasswordQuery(service: service, appGroup: appGroup).query
             let status = SecItemDelete(query as CFDictionary)
@@ -159,14 +106,14 @@ public extension PasswordKeychainManager {
 }
 
 // MARK: - Implementation
-private extension PasswordKeychainManager {
+private extension SecretInfoKeychainManager {
 
     func error(from status: OSStatus) -> KeyChainError {
         let message = SecCopyErrorMessageString(status, nil) as String? ?? NSLocalizedString("Unhandled Error", comment: "")
         return KeyChainError.unknownError(message: message)
     }
 
-    func parsePasswordToData(_ password: String) throws -> Data {
+    func parseInfosToData(_ password: String) throws -> Data {
         guard let encodedPassword = password.data(using: .utf8) else {
             throw KeyChainError.stringToDataConversionError
         }
@@ -174,7 +121,7 @@ private extension PasswordKeychainManager {
         return encodedPassword
     }
 
-    func makeFindPasswordQuery(for userAccount: String) -> CFDictionary {
+    func makeFindInfoQuery(for userAccount: String) -> CFDictionary {
         let passwordQuery = PasswordQuery(service: service, appGroup: appGroup)
         var ret = passwordQuery.query
         ret[String(kSecMatchLimit)] = kSecMatchLimitOne

@@ -3,26 +3,26 @@ import XCTest
 
 final class PasswordKeychainTests: XCTestCase {
 
-    private var passwordKeychainManager: PasswordKeychainManager!
+    private var passwordKeychainManager: SecretInfoKeychainManager!
     private let testService: String = "TestService"
     private let testAccount: String = "TestAccount"
     private let testPassword: String = "TestPassword"
 
     override func setUp() async throws {
         try await super.setUp()
-        passwordKeychainManager = .init(PasswordKeychainManager(service: testService))
+        passwordKeychainManager = .init(SecretInfoKeychainManager(service: testService))
     }
 
     override func tearDown() async throws {
-        try await passwordKeychainManager.removeAllPassword()
+        try await passwordKeychainManager.removeAllInfos()
         passwordKeychainManager = nil
         try await super.tearDown()
     }
 
     func testSaveAndGetPassword() async {
         do {
-            try await passwordKeychainManager.savePassword(testPassword, for: testAccount)
-            let password = try await passwordKeychainManager.getPassword(for: testAccount)
+            try await passwordKeychainManager.saveSecretInfo(testPassword, for: testAccount)
+            let password = try await passwordKeychainManager.getSecretInfo(for: testAccount)
             XCTAssertEqual(password, testPassword)
         } catch {
             XCTFail("Saving Password failed, \(error.localizedDescription)")
@@ -31,11 +31,11 @@ final class PasswordKeychainTests: XCTestCase {
 
     func testUpdatePassword() async {
         do {
-            try await passwordKeychainManager.savePassword(testPassword, for: testAccount)
+            try await passwordKeychainManager.saveSecretInfo(testPassword, for: testAccount)
             try await passwordKeychainManager
-                .savePassword(testPassword + "2", for: testAccount)
+                .saveSecretInfo(testPassword + "2", for: testAccount)
 
-            let password = try await passwordKeychainManager.getPassword(for: testAccount)
+            let password = try await passwordKeychainManager.getSecretInfo(for: testAccount)
 
             XCTAssertEqual(password, testPassword + "2")
             XCTAssertNotEqual(password, testPassword)
@@ -46,22 +46,22 @@ final class PasswordKeychainTests: XCTestCase {
 
     func testRemovePassword() async {
         do {
-            try await passwordKeychainManager.savePassword(testPassword, for: testAccount)
-            try await passwordKeychainManager.removePassword(for: testAccount)
+            try await passwordKeychainManager.saveSecretInfo(testPassword, for: testAccount)
+            try await passwordKeychainManager.removeInfo(for: testAccount)
 
-            let password = try await passwordKeychainManager.getPassword(for: testAccount)
+            let password = try await passwordKeychainManager.getSecretInfo(for: testAccount)
             XCTAssertNil(password)
         } catch {
             XCTFail("Remove Password Failed with \(error.localizedDescription)")
         }
     }
 
-    func testRemoveAllPassword() async {
+    func testremoveAllInfos() async {
         do {
-            try await passwordKeychainManager.savePassword(testPassword, for: testAccount)
-            try await passwordKeychainManager.removeAllPassword()
+            try await passwordKeychainManager.saveSecretInfo(testPassword, for: testAccount)
+            try await passwordKeychainManager.removeAllInfos()
 
-            let password = try await passwordKeychainManager.getPassword(for: testAccount)
+            let password = try await passwordKeychainManager.getSecretInfo(for: testAccount)
             XCTAssertNil(password)
         } catch {
             XCTFail("Remove all passwords failed with \(error.localizedDescription)")
@@ -73,12 +73,12 @@ final class PasswordKeychainTests: XCTestCase {
         let promise = expectation(description: "Test and save password success!")
         var password: String?
         // when
-        passwordKeychainManager.savePassword(testPassword, for: testAccount) { [self] error in
+        passwordKeychainManager.saveSecretInfo(testPassword, for: testAccount) { [self] error in
             guard error == nil else {
                 promise.fulfill()
                 return
             }
-            passwordKeychainManager.getPassword(for: self.testAccount) { pw, error in
+            passwordKeychainManager.getSecretInfo(for: self.testAccount) { pw, error in
                 password = pw
                 promise.fulfill()
             }
@@ -94,17 +94,17 @@ final class PasswordKeychainTests: XCTestCase {
         let promise = expectation(description: "Update password success!")
         var password: String?
         // when
-        passwordKeychainManager.savePassword(testPassword, for: testAccount) { [self] error in
+        passwordKeychainManager.saveSecretInfo(testPassword, for: testAccount) { [self] error in
             guard error == nil else {
                 promise.fulfill()
                 return
             }
-            self.passwordKeychainManager.savePassword(testPassword + "2", for: testAccount) { [self] error in
+            self.passwordKeychainManager.saveSecretInfo(testPassword + "2", for: testAccount) { [self] error in
                 guard error == nil else {
                     promise.fulfill()
                     return
                 }
-                self.passwordKeychainManager.getPassword(for: self.testAccount) { pw, error in
+                self.passwordKeychainManager.getSecretInfo(for: self.testAccount) { pw, error in
                     password = pw
                     promise.fulfill()
                 }
@@ -121,15 +121,15 @@ final class PasswordKeychainTests: XCTestCase {
         let promise = expectation(description: "Remove password success!")
         var password: String?
         // when
-        try await passwordKeychainManager.savePassword(testPassword, for: testAccount)
-        let pw: String? = try await passwordKeychainManager.getPassword(for: testAccount)
+        try await passwordKeychainManager.saveSecretInfo(testPassword, for: testAccount)
+        let pw: String? = try await passwordKeychainManager.getSecretInfo(for: testAccount)
         XCTAssertEqual(testPassword, pw)
-        passwordKeychainManager.removePassword(for: testAccount) { [self] error in
+        passwordKeychainManager.removeSecretInfo(for: testAccount) { [self] error in
             guard error == nil else {
                 promise.fulfill()
                 return
             }
-            passwordKeychainManager.getPassword(for: testAccount) { pw, error in
+            passwordKeychainManager.getSecretInfo(for: testAccount) { pw, error in
                 password = pw
                 promise.fulfill()
             }
@@ -140,20 +140,20 @@ final class PasswordKeychainTests: XCTestCase {
         XCTAssertNil(password)
     }
 
-    func testRemoveAllPasswordCompletionHandler() async throws {
+    func testremoveAllInfosCompletionHandler() async throws {
         // given
         let promise = expectation(description: "Remove password success!")
         var password: String?
         // when
-        try await passwordKeychainManager.savePassword(testPassword, for: testAccount)
-        let pw: String? = try await passwordKeychainManager.getPassword(for: testAccount)
+        try await passwordKeychainManager.saveSecretInfo(testPassword, for: testAccount)
+        let pw: String? = try await passwordKeychainManager.getSecretInfo(for: testAccount)
         XCTAssertEqual(testPassword, pw)
-        passwordKeychainManager.removeAllPassword { [self] error in
+        passwordKeychainManager.removeAllInfos { [self] error in
             guard error == nil else {
                 promise.fulfill()
                 return
             }
-            passwordKeychainManager.getPassword(for: testAccount) { pw, error in
+            passwordKeychainManager.getSecretInfo(for: testAccount) { pw, error in
                 password = pw
                 promise.fulfill()
             }
