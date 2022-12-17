@@ -7,6 +7,8 @@
 
 import Foundation
 
+import KeyChainWrapper
+
 // MARK: - Public Interface
 // MARK: - Async/Await extension
 public extension SecretInfoKeychainManager {
