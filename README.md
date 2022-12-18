@@ -40,7 +40,7 @@ func saveSecretInfo(_ secretInfo: String, for infoKey: String, completion: ((Err
 func getSecretInfo(for infoKey: String, completion: ((String? ,Error?) -> Void)? = nil)
 ```
 
-비밀정보의 키값을 주면 비밀정보를 가져오는 API입니다. 비밀정보는 String 형태로 불러옵니다.
+비밀정보의 키값을 주면 비밀정보를 가져오는 API입니다. 비밀정보는 String 형태로 불러옵니다. 만약 데이터가 존재하지 않거나 불러오는 도중 에러가 발생한 경우, Error를 전달해 클로저를 호출합니다.
 
 3. 비밀정보를 삭제하는 기능
 
@@ -61,3 +61,11 @@ KeychainManager 인스턴스를 생성할 때 넘겨줬던 service 키체인 하
 ### Async/Await 를 사용하는 API
 
 위 기능 모두 Async/Await를 사용해서 사용할 수 있습니다. 
+
+### Rx Extension 지원
+
+위 기능 모두 RxSwift의 Single 형태로 반환받아 사용할 수 있습니다.
+
+### Combine 지원
+
+위 기능 모두 Combine의 AnyPublisher 형태로 반환받아 사용할 수 있습니다.
