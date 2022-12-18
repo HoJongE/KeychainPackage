@@ -18,9 +18,13 @@ let package = Package(
             targets: ["KeyChainWrapperCombine"]),
         .library(
             name: "KeyChainWrapperSwift",
-            targets: ["KeyChainWrapperSwift"])
+            targets: ["KeyChainWrapperSwift"]),
+        .library(
+            name: "KeyChainWrapperRxSwift",
+            targets: ["KeyChainWrapperRxSwift"])
     ],
     dependencies: [
+        .package(url: "https://github.com/ReactiveX/RxSwift", from: "5.0.0")
     ],
     targets: [
         .target(
@@ -32,6 +36,9 @@ let package = Package(
         .target(
             name: "KeyChainWrapperSwift",
             dependencies: ["KeyChainWrapper"]),
+        .target(
+            name: "KeyChainWrapperRxSwift",
+            dependencies: ["KeyChainWrapper", "RxSwift"]),
         .testTarget(
             name: "KeyChainWrapperTests",
             dependencies: ["KeyChainWrapper", "KeyChainWrapperSwift"]),

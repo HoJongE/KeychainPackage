@@ -10,6 +10,7 @@ import Foundation
 
 import KeyChainWrapper
 
+// MARK: - Combine Extension
 public extension SecretInfoKeychainManager {
 
     func saveSecretInfo(_ secretInfo: String, for infoKey: String) -> AnyPublisher<Void, Error> {
