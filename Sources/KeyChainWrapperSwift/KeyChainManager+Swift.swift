@@ -25,11 +25,11 @@ public extension SecretInfoKeychainManager {
         }
     }
 
-    func getSecretInfo(for infoKey: String) async throws -> String? {
-        let password: String? = try await withCheckedThrowingContinuation { [self] continuation in
+    func getSecretInfo(for infoKey: String) async throws -> String {
+        let password: String = try await withCheckedThrowingContinuation { [self] continuation in
             getSecretInfo(for: infoKey) { password, error in
-                if let error = error {
-                    continuation.resume(throwing: error)
+                guard error == nil, let password else {
+                    continuation.resume(throwing: error!)
                     return
                 }
                 continuation.resume(returning: password)

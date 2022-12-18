@@ -11,6 +11,7 @@ public enum KeyChainError: Error {
     case stringToDataConversionError
     case dataToStringConversionError
     case unknownError(message: String)
+    case dataNotExists
 }
 
 extension KeyChainError: LocalizedError {
@@ -22,6 +23,8 @@ extension KeyChainError: LocalizedError {
             return NSLocalizedString("Data to string conversion error", comment: "")
         case .unknownError(let message):
             return NSLocalizedString("Unknown Error, \(message)", comment: "")
+        case .dataNotExists:
+            return NSLocalizedString("Data is not exists", comment: "")
         }
     }
 }

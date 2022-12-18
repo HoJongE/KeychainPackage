@@ -30,6 +30,19 @@ final class PasswordKeychainTests: XCTestCase {
         }
     }
 
+    func test_비밀정보가_없으면_에러가뜨는지() async {
+        do {
+            _ = try await passwordKeychainManager.getSecretInfo(for: testAccount)
+            XCTFail(#function)
+        } catch {
+            if case KeyChainError.dataNotExists = error {
+
+            } else {
+                XCTFail(#function + "\(error.localizedDescription)")
+            }
+        }
+    }
+
     func testUpdatePassword() async {
         do {
             try await passwordKeychainManager.saveSecretInfo(testPassword, for: testAccount)
@@ -50,10 +63,13 @@ final class PasswordKeychainTests: XCTestCase {
             try await passwordKeychainManager.saveSecretInfo(testPassword, for: testAccount)
             try await passwordKeychainManager.removeSecretInfo(for: testAccount)
 
-            let password = try await passwordKeychainManager.getSecretInfo(for: testAccount)
-            XCTAssertNil(password)
+            try await passwordKeychainManager.getSecretInfo(for: testAccount)
         } catch {
-            XCTFail("Remove Password Failed with \(error.localizedDescription)")
+            if case KeyChainError.dataNotExists = error {
+
+            } else {
+                XCTFail(#function + "\(error.localizedDescription)")
+            }
         }
     }
 
@@ -62,10 +78,13 @@ final class PasswordKeychainTests: XCTestCase {
             try await passwordKeychainManager.saveSecretInfo(testPassword, for: testAccount)
             try await passwordKeychainManager.removeAllInfos()
 
-            let password = try await passwordKeychainManager.getSecretInfo(for: testAccount)
-            XCTAssertNil(password)
+            _ = try await passwordKeychainManager.getSecretInfo(for: testAccount)
         } catch {
-            XCTFail("Remove all passwords failed with \(error.localizedDescription)")
+            if case KeyChainError.dataNotExists = error {
+
+            } else {
+                XCTFail(#function + "\(error.localizedDescription)")
+            }
         }
     }
 

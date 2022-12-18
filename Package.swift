@@ -38,12 +38,21 @@ let package = Package(
             dependencies: ["KeyChainWrapper"]),
         .target(
             name: "KeyChainWrapperRxSwift",
-            dependencies: ["KeyChainWrapper", "RxSwift"]),
+            dependencies: [
+                "KeyChainWrapper",
+                .product(name: "RxSwift", package: "RxSwift")]),
         .testTarget(
             name: "KeyChainWrapperTests",
             dependencies: ["KeyChainWrapper", "KeyChainWrapperSwift"]),
         .testTarget(
             name: "KeyChainWrapperCombineTests",
             dependencies: ["KeyChainWrapperCombine", "KeyChainWrapperSwift"]),
+        .testTarget(
+            name: "KeyChainWrapperRxTests",
+            dependencies: [
+                .product(name: "RxBlocking", package: "RxSwift"),
+                .product(name: "RxTest", package: "RxSwift"),
+                "KeyChainWrapperRxSwift"
+            ])
     ]
 )
