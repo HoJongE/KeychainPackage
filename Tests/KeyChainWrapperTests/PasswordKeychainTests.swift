@@ -63,7 +63,7 @@ final class PasswordKeychainTests: XCTestCase {
             try await passwordKeychainManager.saveSecretInfo(testPassword, for: testAccount)
             try await passwordKeychainManager.removeSecretInfo(for: testAccount)
 
-            try await passwordKeychainManager.getSecretInfo(for: testAccount)
+            _ = try await passwordKeychainManager.getSecretInfo(for: testAccount)
         } catch {
             if case KeyChainError.dataNotExists = error {
 

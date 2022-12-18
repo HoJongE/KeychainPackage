@@ -46,13 +46,13 @@ let package = Package(
             dependencies: ["KeyChainWrapper", "KeyChainWrapperSwift"]),
         .testTarget(
             name: "KeyChainWrapperCombineTests",
-            dependencies: ["KeyChainWrapperCombine", "KeyChainWrapperSwift"]),
+            dependencies: ["KeyChainWrapperCombine"]),
         .testTarget(
             name: "KeyChainWrapperRxTests",
             dependencies: [
                 .product(name: "RxBlocking", package: "RxSwift"),
                 .product(name: "RxTest", package: "RxSwift"),
-                "KeyChainWrapperRxSwift"
-            ])
+                "KeyChainWrapperRxSwift",
+            ]),
     ]
 )
