@@ -8,7 +8,7 @@
 import Foundation
 
 // MARK: - Completion handler extension
-public extension SecretInfoKeychainManager {
+public extension SecretInfoKeychain {
 
     /// 비밀정보를 KeyChain에 저장하는 함수, 만약 이미 키값의 데이터가 존재한다면, 덮어씌운다.
     /// - Parameters:
@@ -116,7 +116,7 @@ public extension SecretInfoKeychainManager {
 }
 
 // MARK: - Implementation
-private extension SecretInfoKeychainManager {
+private extension SecretInfoKeychain {
 
     func error(from status: OSStatus) -> KeyChainError {
         let message = SecCopyErrorMessageString(status, nil) as String? ?? NSLocalizedString("Unhandled Error", comment: "")

@@ -11,7 +11,7 @@ import KeyChainWrapper
 
 // MARK: - Public Interface
 // MARK: - Async/Await extension
-public extension SecretInfoKeychainManager {
+public extension SecretInfoKeychain {
 
     func saveSecretInfo(_ secretInfo: String, for infoKey: String) async throws {
         try await withCheckedThrowingContinuation { [self] (continuation: CheckedContinuation<Void, Error>) in

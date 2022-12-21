@@ -11,9 +11,9 @@ import Foundation
 import KeyChainWrapper
 
 // MARK: - Combine Extension
-public extension SecretInfoKeychainManager {
+public extension SecretInfoKeychain {
 
-    func saveSecretInfo(_ secretInfo: String, for infoKey: String) -> AnyPublisher<Void, Error> {
+    func saveSecretInfo(_ secretInfo: String, for infoKey: String) -> AnyPublisher<Void, Error> { 
         Future { promise in
             saveSecretInfo(secretInfo, for: infoKey) { error in
                 guard error == nil else {

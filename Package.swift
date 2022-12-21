@@ -4,23 +4,23 @@
 import PackageDescription
 
 let package = Package(
-    name: "KeyChainWrapper",
+    name: "SecretInfoKeyChain",
     platforms: [
         .iOS(.v14),
         .macOS(.v11),
     ],
     products: [
         .library(
-            name: "KeyChainWrapper",
+            name: "SecretInfoKeyChain",
             targets: ["KeyChainWrapper"]),
         .library(
-            name: "KeyChainWrapperCombine",
+            name: "SecretInfoKeyChainCombine",
             targets: ["KeyChainWrapperCombine"]),
         .library(
-            name: "KeyChainWrapperSwift",
+            name: "SecretInfoKeyChainSwift",
             targets: ["KeyChainWrapperSwift"]),
         .library(
-            name: "KeyChainWrapperRxSwift",
+            name: "SecretInfoKeyChainRxSwift",
             targets: ["KeyChainWrapperRxSwift"])
     ],
     dependencies: [

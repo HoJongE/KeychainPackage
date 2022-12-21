@@ -14,7 +14,7 @@ import XCTest
 final class KeyChainWrapperCombineTests: XCTestCase {
 
     private var cancelBag: Set<AnyCancellable>!
-    private var keychainManager: SecretInfoKeychainManager!
+    private var keychainManager: SecretInfoKeychain!
     private let secretInfo: String = "SecretInfo"
     private let infoKey: String = "InfoKey"
 
@@ -41,7 +41,7 @@ final class KeyChainWrapperCombineTests: XCTestCase {
             try waitPublisher(keychainManager.getSecretInfo(for: infoKey))
             XCTFail(#function)
         } catch {
-            if case KeyChainError.dataNotExists = error {
+            if case SecretInfoKeychain.KeyChainError.dataNotExists = error {
 
             } else {
                 XCTFail(#function + "\(error)")
@@ -57,7 +57,7 @@ final class KeyChainWrapperCombineTests: XCTestCase {
             try waitPublisher(keychainManager.getSecretInfo(for: infoKey))
             XCTFail(#function)
         } catch {
-            if case KeyChainError.dataNotExists = error {
+            if case SecretInfoKeychain.KeyChainError.dataNotExists = error {
 
             } else {
                 XCTFail(#function + "\(error)")

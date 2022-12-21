@@ -16,7 +16,7 @@ import RxTest
 final class KeyChainWrapperRxTests: XCTestCase {
 
     private var disposeBag: DisposeBag!
-    private var keychainManager: SecretInfoKeychainManager!
+    private var keychainManager: SecretInfoKeychain!
     private let secretInfo: String = "Better than this"
     private let infoKey: String = "InfoKey"
 
@@ -58,7 +58,7 @@ final class KeyChainWrapperRxTests: XCTestCase {
                 .first()
             XCTFail(#function)
         } catch {
-            if case KeyChainError.dataNotExists = error {
+            if case SecretInfoKeychain.KeyChainError.dataNotExists = error {
             } else {
                 XCTFail(#function + "\(error.localizedDescription)")
             }
@@ -80,7 +80,7 @@ final class KeyChainWrapperRxTests: XCTestCase {
                 .toBlocking()
                 .first()
         } catch {
-            if case KeyChainError.dataNotExists = error {
+            if case SecretInfoKeychain.KeyChainError.dataNotExists = error {
             } else {
                 XCTFail(#function + "\(error.localizedDescription)")
             }

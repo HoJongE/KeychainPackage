@@ -11,7 +11,7 @@ import KeyChainWrapper
 import RxSwift
 
 // MARK: - Rx Extension
-public extension SecretInfoKeychainManager {
+public extension SecretInfoKeychain {
 
     func saveSecretInfo(_ secretInfo: String, for infoKey: String) -> Single<Void> {
         Single.create { single in

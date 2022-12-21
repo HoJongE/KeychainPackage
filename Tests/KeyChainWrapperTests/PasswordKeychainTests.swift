@@ -4,14 +4,14 @@ import XCTest
 
 final class PasswordKeychainTests: XCTestCase {
 
-    private var passwordKeychainManager: SecretInfoKeychainManager!
+    private var passwordKeychainManager: SecretInfoKeychain!
     private let testService: String = "TestService"
     private let testAccount: String = "TestAccount"
     private let testPassword: String = "TestPassword"
 
     override func setUp() async throws {
         try await super.setUp()
-        passwordKeychainManager = .init(SecretInfoKeychainManager(service: testService))
+        passwordKeychainManager = .init(SecretInfoKeychain(service: testService))
     }
 
     override func tearDown() async throws {
@@ -35,7 +35,7 @@ final class PasswordKeychainTests: XCTestCase {
             _ = try await passwordKeychainManager.getSecretInfo(for: testAccount)
             XCTFail(#function)
         } catch {
-            if case KeyChainError.dataNotExists = error {
+            if case SecretInfoKeychain.KeyChainError.dataNotExists = error {
 
             } else {
                 XCTFail(#function + "\(error.localizedDescription)")
@@ -65,7 +65,7 @@ final class PasswordKeychainTests: XCTestCase {
 
             _ = try await passwordKeychainManager.getSecretInfo(for: testAccount)
         } catch {
-            if case KeyChainError.dataNotExists = error {
+            if case SecretInfoKeychain.KeyChainError.dataNotExists = error {
 
             } else {
                 XCTFail(#function + "\(error.localizedDescription)")
@@ -80,7 +80,7 @@ final class PasswordKeychainTests: XCTestCase {
 
             _ = try await passwordKeychainManager.getSecretInfo(for: testAccount)
         } catch {
-            if case KeyChainError.dataNotExists = error {
+            if case SecretInfoKeychain.KeyChainError.dataNotExists = error {
 
             } else {
                 XCTFail(#function + "\(error.localizedDescription)")
