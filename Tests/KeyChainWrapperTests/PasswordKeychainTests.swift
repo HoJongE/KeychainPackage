@@ -1,6 +1,6 @@
 import XCTest
-@testable import KeyChainWrapper
-@testable import KeyChainWrapperSwift
+@testable import SecretInfoKeyChain
+@testable import SecretInfoKeyChainSwift
 
 final class PasswordKeychainTests: XCTestCase {
 

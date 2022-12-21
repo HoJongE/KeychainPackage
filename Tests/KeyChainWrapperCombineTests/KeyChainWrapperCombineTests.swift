@@ -8,8 +8,8 @@
 import Combine
 import XCTest
 
-@testable import KeyChainWrapper
-@testable import KeyChainWrapperCombine
+@testable import SecretInfoKeyChain
+@testable import SecretInfoKeyChainCombine
 
 final class KeyChainWrapperCombineTests: XCTestCase {
 

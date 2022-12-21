@@ -8,7 +8,7 @@
 import Combine
 import Foundation
 
-import KeyChainWrapper
+import SecretInfoKeyChain
 
 // MARK: - Combine Extension
 public extension SecretInfoKeychain {

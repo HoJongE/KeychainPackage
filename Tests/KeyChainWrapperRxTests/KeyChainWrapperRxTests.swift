@@ -6,8 +6,8 @@
 //
 
 import XCTest
-@testable import KeyChainWrapper
-@testable import KeyChainWrapperRxSwift
+@testable import SecretInfoKeyChain
+@testable import SecretInfoKeyChainRxSwift
 
 import RxSwift
 import RxBlocking

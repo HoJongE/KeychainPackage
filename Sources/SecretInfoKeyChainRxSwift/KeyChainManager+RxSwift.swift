@@ -7,7 +7,7 @@
 
 import Foundation
 
-import KeyChainWrapper
+import SecretInfoKeyChain
 import RxSwift
 
 // MARK: - Rx Extension

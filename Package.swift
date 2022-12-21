@@ -3,56 +3,64 @@
 
 import PackageDescription
 
+
+let keychainWrapper: String = "SecretInfoKeyChain"
+let keychainWrapperRxSwift: String = "\(keychainWrapper)RxSwift"
+let keychainWrapperCombine: String = "\(keychainWrapper)Combine"
+let keychainWrapperSwift: String = "\(keychainWrapper)Swift"
+
 let package = Package(
-    name: "SecretInfoKeyChain",
+    name: keychainWrapper,
     platforms: [
         .iOS(.v14),
         .macOS(.v11),
     ],
     products: [
         .library(
-            name: "SecretInfoKeyChain",
-            targets: ["KeyChainWrapper"]),
+            name: keychainWrapper,
+            targets: [keychainWrapper]),
         .library(
-            name: "SecretInfoKeyChainCombine",
-            targets: ["KeyChainWrapperCombine"]),
+            name: keychainWrapperCombine,
+            targets: [keychainWrapperCombine]),
         .library(
-            name: "SecretInfoKeyChainSwift",
-            targets: ["KeyChainWrapperSwift"]),
+            name: keychainWrapperSwift,
+            targets: [keychainWrapperSwift]),
         .library(
-            name: "SecretInfoKeyChainRxSwift",
-            targets: ["KeyChainWrapperRxSwift"])
+            name: keychainWrapperRxSwift,
+            targets: [keychainWrapperRxSwift])
     ],
     dependencies: [
         .package(url: "https://github.com/ReactiveX/RxSwift", from: "5.0.0")
     ],
     targets: [
         .target(
-            name: "KeyChainWrapper",
+            name: keychainWrapper,
             dependencies: []),
         .target(
-            name: "KeyChainWrapperCombine",
-            dependencies: ["KeyChainWrapper"]),
+            name: keychainWrapperCombine,
+            dependencies: [.init(stringLiteral: keychainWrapper)]),
         .target(
-            name: "KeyChainWrapperSwift",
-            dependencies: ["KeyChainWrapper"]),
+            name: keychainWrapperSwift,
+            dependencies: [.init(stringLiteral: keychainWrapper)]),
         .target(
-            name: "KeyChainWrapperRxSwift",
+            name: keychainWrapperRxSwift,
             dependencies: [
-                "KeyChainWrapper",
+                .init(stringLiteral: keychainWrapper),
                 .product(name: "RxSwift", package: "RxSwift")]),
         .testTarget(
             name: "KeyChainWrapperTests",
-            dependencies: ["KeyChainWrapper", "KeyChainWrapperSwift"]),
+            dependencies: [
+                .init(stringLiteral: keychainWrapper),
+                .init(stringLiteral: keychainWrapperSwift)]),
         .testTarget(
             name: "KeyChainWrapperCombineTests",
-            dependencies: ["KeyChainWrapperCombine"]),
+            dependencies: [.init(stringLiteral: keychainWrapperCombine)]),
         .testTarget(
             name: "KeyChainWrapperRxTests",
             dependencies: [
                 .product(name: "RxBlocking", package: "RxSwift"),
                 .product(name: "RxTest", package: "RxSwift"),
-                "KeyChainWrapperRxSwift",
+                .init(stringLiteral: keychainWrapperRxSwift),
             ]),
     ]
 )

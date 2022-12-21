@@ -7,7 +7,7 @@
 
 import Foundation
 
-import KeyChainWrapper
+import SecretInfoKeyChain
 
 // MARK: - Public Interface
 // MARK: - Async/Await extension
