@@ -12,11 +12,11 @@ protocol Queryable {
 }
 
 struct PasswordQuery {
-    private let service: String
+    private let rootKey: String
     private let appGroup: String?
 
     init(service: String, appGroup: String? = nil) {
-        self.service = service
+        self.rootKey = service
         self.appGroup = appGroup
     }
 
@@ -26,7 +26,7 @@ extension PasswordQuery: Queryable {
     var query: [String : Any] {
         var query: [String: Any] = [:]
         query[String(kSecClass)] = kSecClassGenericPassword
-        query[String(kSecAttrService)] = service
+        query[String(kSecAttrService)] = rootKey
         #if !targetEnvironment(simulator)
         if let appGroup = appGroup {
             query[String(kSecAttrAccessGroup)] = appGroup

@@ -23,11 +23,11 @@ final class KeyChainWrapperRxTests: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
         disposeBag = .init()
-        keychainManager = .init(service: "Test")
+        keychainManager = .init(rootKey: "Test")
     }
 
     override func tearDownWithError() throws {
-        _ = try keychainManager.removeAllInfos().toBlocking(timeout: 2).last()
+        _ = try keychainManager.removeAllSecretInfos().toBlocking(timeout: 2).last()
         disposeBag = nil
         keychainManager = nil
         try super.tearDownWithError()
@@ -35,12 +35,12 @@ final class KeyChainWrapperRxTests: XCTestCase {
 
     func test_비밀정보를_잘_저장하고_잘_가져오는지() throws {
         _ = try keychainManager
-            .saveSecretInfo(secretInfo, for: infoKey)
+            .saveSecretInfo(secretInfo: secretInfo, forInfoKey: infoKey)
             .toBlocking()
             .first()
 
         guard let valueFromKeyChain = try keychainManager
-            .getSecretInfo(for: infoKey)
+            .secretInfo(forInfoKey: infoKey)
             .toBlocking()
             .first() else {
             XCTFail(#function)
@@ -53,7 +53,7 @@ final class KeyChainWrapperRxTests: XCTestCase {
     func test_비밀정보가_없으면_못가져오는지() {
         do {
             _ = try keychainManager
-                .getSecretInfo(for: infoKey)
+                .secretInfo(forInfoKey: infoKey)
                 .toBlocking()
                 .first()
             XCTFail(#function)
@@ -68,15 +68,15 @@ final class KeyChainWrapperRxTests: XCTestCase {
     func test_비밀정보를_잘_삭제하는지() {
         do {
             _ = try keychainManager
-                .saveSecretInfo(secretInfo, for: infoKey)
+                .saveSecretInfo(secretInfo: secretInfo, forInfoKey: infoKey)
                 .toBlocking()
                 .first()
             _ = try keychainManager
-                .removeSecretInfo(for: infoKey)
+                .removeSecretInfo(forInfoKey: infoKey)
                 .toBlocking()
                 .first()
             _ = try keychainManager
-                .getSecretInfo(for: infoKey)
+                .secretInfo(forInfoKey: infoKey)
                 .toBlocking()
                 .first()
         } catch {

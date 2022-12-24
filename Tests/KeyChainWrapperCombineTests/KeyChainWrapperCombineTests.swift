@@ -21,24 +21,24 @@ final class KeyChainWrapperCombineTests: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
         cancelBag = .init()
-        keychainManager = .init(service: "Test")
+        keychainManager = .init(rootKey: "Test")
     }
 
     override func tearDownWithError() throws {
-        try waitPublisher(keychainManager.removeAllInfos())
+        try waitPublisher(keychainManager.removeAllSecretInfos())
         try super.tearDownWithError()
     }
 
     func test_비밀정보를_잘_저장하고_가져오는지() throws {
-        try waitPublisher(keychainManager.saveSecretInfo(secretInfo, for: infoKey))
-        let result = try waitPublisher(keychainManager.getSecretInfo(for: infoKey))
+        try waitPublisher(keychainManager.saveSecretInfo(secretInfo: secretInfo, forInfoKey: infoKey))
+        let result = try waitPublisher(keychainManager.secretInfo(forInfoKey: infoKey))
 
         XCTAssertEqual(result, secretInfo)
     }
 
     func test_비밀정보가_없으면_못가져오는지() {
         do {
-            try waitPublisher(keychainManager.getSecretInfo(for: infoKey))
+            try waitPublisher(keychainManager.secretInfo(forInfoKey: infoKey))
             XCTFail(#function)
         } catch {
             if case SecretInfoKeychain.KeyChainError.dataNotExists = error {
@@ -50,11 +50,11 @@ final class KeyChainWrapperCombineTests: XCTestCase {
     }
 
     func test_비밀정보를_잘_삭제하는지() throws {
-        try waitPublisher(keychainManager.saveSecretInfo(secretInfo, for: infoKey))
-        try waitPublisher(keychainManager.removeSecretInfo(for: infoKey))
+        try waitPublisher(keychainManager.saveSecretInfo(secretInfo: secretInfo, forInfoKey: infoKey))
+        try waitPublisher(keychainManager.removeSecretInfo(forInfoKey: infoKey))
 
         do {
-            try waitPublisher(keychainManager.getSecretInfo(for: infoKey))
+            try waitPublisher(keychainManager.secretInfo(forInfoKey: infoKey))
             XCTFail(#function)
         } catch {
             if case SecretInfoKeychain.KeyChainError.dataNotExists = error {

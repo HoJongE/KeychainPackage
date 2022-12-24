@@ -11,19 +11,19 @@ final class PasswordKeychainTests: XCTestCase {
 
     override func setUp() async throws {
         try await super.setUp()
-        passwordKeychainManager = .init(SecretInfoKeychain(service: testService))
+        passwordKeychainManager = .init(SecretInfoKeychain(rootKey: testService))
     }
 
     override func tearDown() async throws {
-        try await passwordKeychainManager.removeAllInfos()
+        try await passwordKeychainManager.removeAllSecretInfos()
         passwordKeychainManager = nil
         try await super.tearDown()
     }
 
     func testSaveAndGetPassword() async {
         do {
-            try await passwordKeychainManager.saveSecretInfo(testPassword, for: testAccount)
-            let password = try await passwordKeychainManager.getSecretInfo(for: testAccount)
+            try await passwordKeychainManager.saveSecretInfo(secretInfo: testPassword, forInfoKey: testAccount)
+            let password = try await passwordKeychainManager.secretInfo(forInfoKey: testAccount)
             XCTAssertEqual(password, testPassword)
         } catch {
             XCTFail("Saving Password failed, \(error.localizedDescription)")
@@ -32,7 +32,7 @@ final class PasswordKeychainTests: XCTestCase {
 
     func test_비밀정보가_없으면_에러가뜨는지() async {
         do {
-            _ = try await passwordKeychainManager.getSecretInfo(for: testAccount)
+            _ = try await passwordKeychainManager.secretInfo(forInfoKey: testAccount)
             XCTFail(#function)
         } catch {
             if case SecretInfoKeychain.KeyChainError.dataNotExists = error {
@@ -45,11 +45,11 @@ final class PasswordKeychainTests: XCTestCase {
 
     func testUpdatePassword() async {
         do {
-            try await passwordKeychainManager.saveSecretInfo(testPassword, for: testAccount)
+            try await passwordKeychainManager.saveSecretInfo(secretInfo: testPassword, forInfoKey: testAccount)
             try await passwordKeychainManager
-                .saveSecretInfo(testPassword + "2", for: testAccount)
+                .saveSecretInfo(secretInfo: testPassword + "2", forInfoKey: testAccount)
 
-            let password = try await passwordKeychainManager.getSecretInfo(for: testAccount)
+            let password = try await passwordKeychainManager.secretInfo(forInfoKey: testAccount)
 
             XCTAssertEqual(password, testPassword + "2")
             XCTAssertNotEqual(password, testPassword)
@@ -60,10 +60,10 @@ final class PasswordKeychainTests: XCTestCase {
 
     func testRemovePassword() async {
         do {
-            try await passwordKeychainManager.saveSecretInfo(testPassword, for: testAccount)
-            try await passwordKeychainManager.removeSecretInfo(for: testAccount)
+            try await passwordKeychainManager.saveSecretInfo(secretInfo: testPassword, forInfoKey: testAccount)
+            try await passwordKeychainManager.removeSecretInfo(forInfoKey: testAccount)
 
-            _ = try await passwordKeychainManager.getSecretInfo(for: testAccount)
+            _ = try await passwordKeychainManager.secretInfo(forInfoKey: testAccount)
         } catch {
             if case SecretInfoKeychain.KeyChainError.dataNotExists = error {
 
@@ -75,10 +75,10 @@ final class PasswordKeychainTests: XCTestCase {
 
     func testremoveAllInfos() async {
         do {
-            try await passwordKeychainManager.saveSecretInfo(testPassword, for: testAccount)
-            try await passwordKeychainManager.removeAllInfos()
+            try await passwordKeychainManager.saveSecretInfo(secretInfo: testPassword, forInfoKey: testAccount)
+            try await passwordKeychainManager.removeAllSecretInfos()
 
-            _ = try await passwordKeychainManager.getSecretInfo(for: testAccount)
+            _ = try await passwordKeychainManager.secretInfo(forInfoKey: testAccount)
         } catch {
             if case SecretInfoKeychain.KeyChainError.dataNotExists = error {
 
@@ -93,12 +93,12 @@ final class PasswordKeychainTests: XCTestCase {
         let promise = expectation(description: "Test and save password success!")
         var password: String?
         // when
-        passwordKeychainManager.saveSecretInfo(testPassword, for: testAccount) { [self] error in
+        passwordKeychainManager.saveSecretInfo(secretInfo: testPassword, forInfoKey: testAccount) { [self] error in
             guard error == nil else {
                 promise.fulfill()
                 return
             }
-            passwordKeychainManager.getSecretInfo(for: self.testAccount) { pw, error in
+            passwordKeychainManager.secretInfo(forInfoKey: self.testAccount) { pw, error in
                 password = pw
                 promise.fulfill()
             }
@@ -114,17 +114,17 @@ final class PasswordKeychainTests: XCTestCase {
         let promise = expectation(description: "Update password success!")
         var password: String?
         // when
-        passwordKeychainManager.saveSecretInfo(testPassword, for: testAccount) { [self] error in
+        passwordKeychainManager.saveSecretInfo(secretInfo: testPassword, forInfoKey: testAccount) { [self] error in
             guard error == nil else {
                 promise.fulfill()
                 return
             }
-            self.passwordKeychainManager.saveSecretInfo(testPassword + "2", for: testAccount) { [self] error in
+            self.passwordKeychainManager.saveSecretInfo(secretInfo: testPassword + "2", forInfoKey: testAccount) { [self] error in
                 guard error == nil else {
                     promise.fulfill()
                     return
                 }
-                self.passwordKeychainManager.getSecretInfo(for: self.testAccount) { pw, error in
+                self.passwordKeychainManager.secretInfo(forInfoKey: self.testAccount) { pw, error in
                     password = pw
                     promise.fulfill()
                 }
@@ -141,15 +141,15 @@ final class PasswordKeychainTests: XCTestCase {
         let promise = expectation(description: "Remove password success!")
         var password: String?
         // when
-        try await passwordKeychainManager.saveSecretInfo(testPassword, for: testAccount)
-        let pw: String? = try await passwordKeychainManager.getSecretInfo(for: testAccount)
+        try await passwordKeychainManager.saveSecretInfo(secretInfo: testPassword, forInfoKey: testAccount)
+        let pw: String? = try await passwordKeychainManager.secretInfo(forInfoKey: testAccount)
         XCTAssertEqual(testPassword, pw)
-        passwordKeychainManager.removeSecretInfo(for: testAccount) { [self] error in
+        passwordKeychainManager.removeSecretInfo(forInfoKey: testAccount) { [self] error in
             guard error == nil else {
                 promise.fulfill()
                 return
             }
-            passwordKeychainManager.getSecretInfo(for: testAccount) { pw, error in
+            passwordKeychainManager.secretInfo(forInfoKey: testAccount) { pw, error in
                 password = pw
                 promise.fulfill()
             }
@@ -165,15 +165,15 @@ final class PasswordKeychainTests: XCTestCase {
         let promise = expectation(description: "Remove password success!")
         var password: String?
         // when
-        try await passwordKeychainManager.saveSecretInfo(testPassword, for: testAccount)
-        let pw: String? = try await passwordKeychainManager.getSecretInfo(for: testAccount)
+        try await passwordKeychainManager.saveSecretInfo(secretInfo: testPassword, forInfoKey: testAccount)
+        let pw: String? = try await passwordKeychainManager.secretInfo(forInfoKey: testAccount)
         XCTAssertEqual(testPassword, pw)
-        passwordKeychainManager.removeAllInfos { [self] error in
+        passwordKeychainManager.removeAllSecretInfos { [self] error in
             guard error == nil else {
                 promise.fulfill()
                 return
             }
-            passwordKeychainManager.getSecretInfo(for: testAccount) { pw, error in
+            passwordKeychainManager.secretInfo(forInfoKey: testAccount) { pw, error in
                 password = pw
                 promise.fulfill()
             }

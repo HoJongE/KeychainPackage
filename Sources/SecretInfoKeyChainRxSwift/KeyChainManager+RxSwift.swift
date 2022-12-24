@@ -13,9 +13,15 @@ import RxSwift
 // MARK: - Rx Extension
 public extension SecretInfoKeychain {
 
-    func saveSecretInfo(_ secretInfo: String, for infoKey: String) -> Single<Void> {
+    /// 비밀정보를 KeyChain에 저장하는 함수, 만약 이미 키값의 데이터가 존재한다면, 덮어씌운다.
+    /// - Parameters:
+    ///   - secretInfo: 비밀정보
+    ///   - infoKey: 비밀정보가 저장될 키 값
+    /// - Returns: 발행 이벤트
+    /// - Note: infoKey 에 해당하는 데이터가 이미 존재하는 경우, 해당 데이터를 새로운 secretInfo로 덮어씌우므로 주의가 필요합니다.
+    func saveSecretInfo(secretInfo: String, forInfoKey infoKey: String) -> Single<Void> {
         Single.create { single in
-            saveSecretInfo(secretInfo, for: infoKey) { error in
+            saveSecretInfo(secretInfo: secretInfo, forInfoKey: infoKey) { error in
                 guard error == nil else {
                     single(.error(error!))
                     return
@@ -27,9 +33,13 @@ public extension SecretInfoKeychain {
         .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .default))
     }
 
-    func getSecretInfo(for infoKey: String) -> Single<String> {
+    /// 키값의 비밀정보를 가져오는 함수
+    /// - Parameter infoKey: 키값
+    /// - Returns: 비밀정보 발행
+    /// - Note: 비밀정보가 없는 경우도 Error가 반환됩니다.
+    func secretInfo(forInfoKey infoKey: String) -> Single<String> {
         Single.create { single in
-            getSecretInfo(for: infoKey) { value, error in
+            secretInfo(forInfoKey: infoKey) { value, error in
                 guard error == nil, let value else {
                     single(.error(error!))
                     return
@@ -41,9 +51,13 @@ public extension SecretInfoKeychain {
         .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .default))
     }
 
-    func removeSecretInfo(for infoKey: String) -> Single<Void> {
+    /// 키값의 비밀정보를 삭제하는 함수
+    /// 키값의 비밀정보가 없거나, 삭제에 성공한 경우 정상적으로 종료됩니다.
+    /// - Parameter infoKey: 키값
+    /// - Returns: 삭제 이벤트
+    func removeSecretInfo(forInfoKey infoKey: String) -> Single<Void> {
         Single.create { single in
-            removeSecretInfo(for: infoKey) { error in
+            removeSecretInfo(forInfoKey: infoKey) { error in
                 guard error == nil else {
                     single(.error(error!))
                     return
@@ -55,9 +69,11 @@ public extension SecretInfoKeychain {
         .subscribeOn(ConcurrentDispatchQueueScheduler(qos: .default))
     }
 
-    func removeAllInfos() -> Single<Void> {
+    /// rootKey의 모든 비밀정보를 삭제하는 함수
+    /// - Returns: 삭제 이벤트
+    func removeAllSecretInfos() -> Single<Void> {
         Single.create { single in
-            removeAllInfos { error in
+            removeAllSecretInfos { error in
                 guard error == nil else {
                     single(.error(error!))
                     return
